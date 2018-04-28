@@ -1,0 +1,111 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. HELLOWOD.
+       ENVIRONMENT DIVISION.
+        INPUT-OUTPUT SECTION.
+        FILE-CONTROL.
+      *
+      * DEFINICAO DOS ARQUIVOS
+      *
+           SELECT ARQUIVO ASSIGN TO INI1
+                  ORGANIZATION   IS SEQUENTIAL
+                  ACCESS MODE    IS SEQUENTIAL.
+      *
+       DATA DIVISION.
+       FILE SECTION.
+      *
+       FD ARQUIVO.
+       01 ARQUIVO-AREA.
+          05 CHAVE-USU        PIC 9(08).
+          05 NOME-USU         PIC X(21).
+          05 DESC-DESCONTO    PIC X(30).
+          05 VALR-TAR-ARQ     PIC 9(4)V99.
+      *
+       WORKING-STORAGE SECTION.
+       01 WSS-DATA.
+          05 WSS-ANO          PIC 9(02) VALUE ZEROS.
+          05 WSS-MES          PIC 9(02) VALUE ZEROS.
+          05 WSS-DIA          PIC 9(02) VALUE ZEROS.
+       01 NUMERO-ALE          PIC 9(03) VALUE ZEROS.
+       01 NUM-MIN             PIC 99    VALUE 10.
+       01 NUM-MAX             PIC 99    VALUE 15.
+
+       77 QTD-TAR             PIC 99 VALUE ZEROS.
+      * ====================================== *
+      *           TABELAS INTERNAS             *
+      * ====================================== *
+        01 TABELA-TARIFA.
+           03 TABELA-TAR OCCURS 0 TO 5
+                         DEPENDING ON  QTD-TAR
+                         ASCENDING KEY COD-TAR
+                           INDEXED BY  IDX-TAR.
+           05 COD-TAR          PIC 9(02).
+           05 DES-TAR          PIC X(30).
+           05 VAL-TAR          PIC 9(4)V99.
+      *
+       LINKAGE SECTION.
+        01 WSS-PARAMETRO.
+           05 NUMERO           PIC 9(08).
+      *
+       PROCEDURE DIVISION USING WSS-PARAMETRO.
+       MAIN-LOGIC SECTION.
+       BEGIN.
+           MOVE 5               TO QTD-TAR.
+           ACCEPT WSS-DATA FROM DATE.
+           OPEN EXTEND ARQUIVO.
+           PERFORM 03000-CARREGA-TABELA-INTERNA.
+           PERFORM 01000-GRAVA-ARQUIVO-SAIDA 152225 TIMES.
+           CLOSE  ARQUIVO.
+           STOP RUN.
+       MAIN-LOGIC-EXIT.
+           EXIT.
+
+      * =============== FUNCOES ================== *
+
+       01000-GRAVA-ARQUIVO-SAIDA.
+            PERFORM 02000-GERA-ALEATORIO.
+            MOVE  NUMERO-ALE TO CHAVE-USU.
+            MOVE 'TESTE NOME DO CLIENTE' TO NOME-USU.
+
+            SET IDX-TAR      TO 1.
+            SEARCH TABELA-TAR
+                AT END
+                MOVE 'Desconto nao cadastrado' TO DESC-DESCONTO
+                MOVE ZEROS                TO VALR-TAR-ARQ
+             WHEN    COD-TAR(IDX-TAR) = NUMERO-ALE
+                MOVE DES-TAR(IDX-TAR) TO DESC-DESCONTO
+                MOVE VAL-TAR(IDX-TAR) TO VALR-TAR-ARQ
+            END-SEARCH.
+
+            WRITE ARQUIVO-AREA.
+
+       01099-EXIT.
+           EXIT.
+
+       02000-GERA-ALEATORIO.
+
+           COMPUTE NUMERO-ALE = FUNCTION RANDOM *
+                   (NUM-MAX - NUM-MIN + 1) + NUM-MIN.
+
+       02099-EXIT.
+           EXIT.
+
+       03000-CARREGA-TABELA-INTERNA.
+
+           MOVE 10                  TO  COD-TAR(1).
+           MOVE 'Desconto/Anuidade' TO  DES-TAR(1).
+           MOVE 14.99               TO  VAL-TAR(1).
+
+           MOVE 11                  TO  COD-TAR(2).
+           MOVE 'Emissao Extrato/Mensal' TO DES-TAR(2).
+           MOVE 2.00                TO  VAL-TAR(2).
+
+           MOVE 12                  TO  COD-TAR(3).
+           MOVE 'Tar Emissao Boleto Ele' TO DES-TAR(3).
+           MOVE 5.50                TO  VAL-TAR(3).
+
+           MOVE 13                  TO  COD-TAR(4).
+           MOVE 'Debito de Cesta Servico' TO DES-TAR(4).
+           MOVE 45.99               TO  VAL-TAR(4).
+
+       03000-EXIT.
+           EXIT.
