@@ -1,0 +1,101 @@
+//CTRAINVM JOB  (PLS,81038),'JAMAL',CLASS=T,REGION=0M,                          
+//         MSGLEVEL=(1,1),MSGCLASS=A,NOTIFY=&SYSUID,                            
+//         RESTART=STEP01                                                       
+//**********************************************************************        
+//STEP01   EXEC PGM=IDCAMS,REGION=2M                                            
+//SYSPRINT DD SYSOUT=*                                                          
+//SYSIN DD *                                                                    
+      DELETE (H.CTR.CTRAFIN.VSAM) PURGE                                         
+      SET MAXCC = 0                                                             
+                                                                                
+      DEFINE    -                                                               
+        CLUSTER (NAME(H.CTR.CTRAFIN.VSAM) -                                     
+                 SPEED -                                                        
+                 NOREUSE -                                                      
+                 INDEXED -                                                      
+                 KEYS (36 0)   -                                                
+                 SHR (2,3) -                                                    
+                 RECORDS (1200000 1000)) -                                      
+         INDEX   (NAME(H.CTR.CTRAFIN.VSAM.I)) -                                 
+         DATA   (NAME(H.CTR.CTRAFIN.VSAM.D) -                                   
+              RECSZ(0220 0220))                                                 
+/*                                                                              
+//**********************************************************                    
+//STEP02   EXEC PGM=IDCAMS,COND=(0,NE)                                          
+//SYSPRINT DD  SYSOUT=*                                                         
+//SYSOUT   DD  SYSOUT=*                                                         
+//SYSIN  DD  *                                                                  
+  DELETE H.CTR.CTRAFIN.SEQ.SRT PURGE                                            
+  SET MAXCC = 0                                                                 
+//**********************************************************                    
+//*      CLASSIFICA E RETIRA DUPLICIDADE                                        
+//**********************************************************                    
+//STEP03   EXEC PGM=SORT,COND=(0,NE)                                            
+//SYSPRINT DD  SYSOUT=*                                                         
+//SYSOUT   DD  SYSOUT=*                                                         
+//SORTWK01 DD  UNIT=SYSDA,SPACE=(CYL,(100,20),RLSE)                             
+//SORTWK02 DD  UNIT=SYSDA,SPACE=(CYL,(100,20),RLSE)                             
+//SORTWK03 DD  UNIT=SYSDA,SPACE=(CYL,(100,20),RLSE)                             
+//SORTIN   DD DISP=SHR,DSN=H.CTR.CTRAFIN.D180622.SEQ                            
+//SORTOUT  DD DSN=H.CTR.CTRAFIN.SEQ.SRT,                                        
+//            DISP=(,CATLG,DELETE),                                             
+//            UNIT=SYSDA,SPACE=(TRK,(5000,500),RLSE),                           
+//            DCB=(RECFM=FB,LRECL=220,DSORG=PS,BLKSIZE=0)                       
+//SYSIN    DD *                                                                 
+                                                                                
+  SORT FIELDS=(01,36,CH,A)                                                      
+  SUM FIELDS=NONE                                                               
+/*                                                                              
+//**********************************************************                    
+//*    CARREGA ARQUIVO INDEXADO                                                 
+//**********************************************************                    
+//STEP04   EXEC PGM=IDCAMS,COND=(0,NE)                                          
+//SYSOUT   DD SYSOUT=*                                                          
+//SYSPRINT DD SYSOUT=*                                                          
+//ENTRA    DD DISP=SHR,DSN=H.CTR.CTRAFIN.SEQ.SRT                                
+//SAIDA    DD DISP=SHR,DSN=H.CTR.CTRAFIN.VSAM                                   
+//SYSIN    DD *                                                                 
+                                                                                
+      REPRO INFILE(ENTRA) OUTFILE(SAIDA)                                        
+                                                                                
+/*                                                                              
+//**********************************************************                    
+//**********************************************************                    
+//**********************************************************                    
+//STEP05   EXEC PGM=IDCAMS,REGION=0M,COND=(0,NE)                                
+//SYSPRINT DD SYSOUT=*                                                          
+//SYSOUT   DD SYSOUT=*                                                          
+//SYSIN DD *                                                                    
+  DELETE (H.CTR.CTRAFIN.ALTIDX) PURGE                                           
+  SET MAXCC = 0                                                                 
+                                                                                
+  DEFINE AIX (NAME(H.CTR.CTRAFIN.ALTIDX) -                                      
+       RELATE (H.CTR.CTRAFIN.VSAM)                      -                       
+       SPEED                                            -                       
+       SHR(2,3)                                           -                     
+       RECORDS (1200000 1000)                           -                       
+       KEYS (173 28)                                     -                      
+       UPG)                                             -                       
+    INDEX   (NAME(H.CTR.CTRAFIN.ALTIDX.I)               -                       
+         CISZ(4096))  -                                                         
+    DATA   (NAME(H.CTR.CTRAFIN.ALTIDX.D)                -                       
+       RECSZ(0220 0220))                                                        
+    DEFINE PATH (NAME(H.CTR.CTRAFIN.ALTIDX.PATH)        -                       
+         PATHENTRY (H.CTR.CTRAFIN.ALTIDX) -                                     
+         UPD)                                                                   
+                                                                                
+//********************************************************************          
+//*    CARREGA  ALTER INDEX                                                     
+//********************************************************************          
+//STEP06   EXEC PGM=IDCAMS,COND=(0,NE)                                          
+//SYSPRINT DD SYSOUT=*                                                          
+//SYSOUT   DD SYSOUT=*                                                          
+//ENTRA    DD DISP=SHR,DSN=H.CTR.CTRAFIN.VSAM                                   
+//SAIDA    DD DISP=SHR,DSN=H.CTR.CTRAFIN.ALTIDX                                 
+//SYSIN    DD *                                                                 
+                                                                                
+     BLDINDEX INFILE(ENTRA) OUTFILE(SAIDA) ESORT                                
+                                                                                
+/*                                                                              
+//*                                                                             
+//********************************************************************          

@@ -1,0 +1,20 @@
+//EXECUTTD JOB 'JOB SIMPLES',MSGLEVEL=A,CLASS=C,NOTIFY=&SYSUID                  
+//* =============================================================== *           
+//STEP01   EXEC PGM=IDCAMS,COND=(0,NE)                                          
+//SYSPRINT DD SYSOUT=*                                                          
+//SYSIN    DD *                                                                 
+   DELETE (BRB11.SIS.TESTE.ESTUDOS) PURGE                                       
+     IF MAXCC = 8 THEN SET MAXCC = 0                                            
+//*                                                                             
+//* =============================================================== *           
+//*                          PARAMETROS                             *           
+//* PES        :  PERMUTACAO SIMPLES                                *           
+//* PER        :  PERMUTACAO COM ELEMENTO REPETIDOS                 *           
+//* =============================================================== *           
+//* =                EXECUCAO DE PROGRAMA - ESTUDOS               = *           
+//* =============================================================== *           
+//STEP02   EXEC PGM=ESTUDOJM,PARM='PES0014AMARA'                                
+//STEPLIB  DD   DSN=SHRPRD.JAMAL.LOADLIB,DISP=SHR                               
+//*INI1     DD   DSN=BRB11.SIS.TESTE.ESTUDOS,                                   
+//*         SPACE=(CYL,(1,1),RLSE),DISP=(,CATLG,DELETE),                        
+//*         DCB=(RECFM=FB,LRECL=075,DSORG=PS,BLKSIZE=0),UNIT=SYSDA              

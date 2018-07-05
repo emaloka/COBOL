@@ -1,0 +1,248 @@
+100300 IDENTIFICATION DIVISION.                                                 
+100400                                                                          
+100500 PROGRAM-ID.      ESTUDOJM.                                               
+100600                                                                          
+100700 AUTHOR.  JAMAL                                                           
+100800                                                                          
+100900 DATE-WRITTEN. 20/06/2018                                                 
+101000                                                                          
+101100 DATE-COMPILED.                                                           
+101200                                                                          
+103300                                                                          
+103400 ENVIRONMENT DIVISION.                                                    
+103500                                                                          
+103600 CONFIGURATION SECTION.                                                   
+103700                                                                          
+103800 SPECIAL-NAMES.                                                           
+103900                                                                          
+104000     DECIMAL-POINT IS COMMA.                                              
+104100                                                                          
+104300 DATA DIVISION.                                                           
+       WORKING-STORAGE SECTION.                                                 
+                                                                                
+          01 WSS-PROGRAMA-INICIO                                                
+                            PIC X(24) VALUE '*** INICIO ESTUDOJM ***'.          
+          01 WSS-PROGRAMA-FIM                                                   
+                            PIC X(24) VALUE '*** FIM DO ESTUDOJM ***'.          
+          01 PERMUTACAO.                                                        
+             05 PERM-RESULTADO  PIC 9(09) VALUE ZEROS.                          
+             05 CNT-PERM        PIC 9(09) VALUE ZEROS.                          
+          01 PERMUTACAO-ELE-REPE.                                               
+             05 IND-POSICAO      PIC 9(02) VALUE 1.                             
+             05 POSICAO-ATUAL    PIC 9(02) VALUE 0.                             
+             05 GDA-LETRA-REP    PIC X(01) VALUE SPACES.                        
+             05 IND-ESPACO       PIC X(01) VALUE 'N'.                           
+             05 IND-FIM          PIC X(01) VALUE 'N'.                           
+             05 TAMANHO-PALA     PIC 9(02) VALUE ZEROS.                         
+             05 CONTA-PALA-REP   PIC 9(02) VALUE ZEROS.                         
+             05 TRABALHA-PALAVRA PIC X(10) VALUE SPACES.                        
+                                                                                
+      * AREA DE GUARDAS                                                         
+          01 GDA-PALA           PIC X(01) VALUE SPACES.                         
+          01 GDA-LETRA          PIC X(01) VALUE SPACES.                         
+          01 GDA-CONT-ELEMENTOS PIC 9(02) VALUE ZEROS.                          
+          01 ELEMENTO1.                                                         
+          05 GDA-CONT-ELE1      PIC 9(02) VALUE ZEROS.                          
+          05 LETRA-ELEMENTO1    PIC X(01) VALUE SPACES.                         
+          01 ELEMENTO2.                                                         
+          05 GDA-CONT-ELE2      PIC 9(02) VALUE ZEROS.                          
+          05 LETRA-ELEMENTO2    PIC X(01) VALUE SPACES.                         
+          01 ELEMENTO3.                                                         
+          05 GDA-CONT-ELE3      PIC 9(02) VALUE ZEROS.                          
+          05 LETRA-ELEMENTO3    PIC X(01) VALUE SPACES.                         
+          01 ELEMENTO4.                                                         
+          05 GDA-CONT-ELE4      PIC 9(02) VALUE ZEROS.                          
+          05 LETRA-ELEMENTO4    PIC X(01) VALUE SPACES.                         
+          01 ELEMENTO5.                                                         
+          05 GDA-CONT-ELE5      PIC 9(02) VALUE ZEROS.                          
+          05 LETRA-ELEMENTO5    PIC X(01) VALUE SPACES.                         
+          01 GDA-VERI-FINA      PIC 9(02) VALUE ZEROS.                          
+      * AREA DE MASCARAS                                                        
+                                                                                
+          01 RESULTADO-PERMUTA  PIC ZZ.ZZZ.ZZZ.ZZZ.Z99.                         
+          01 BARRA              PIC X(75) VALUE                                 
+         '--------------------------------------------------------'.            
+                                                                                
+       LINKAGE SECTION.                                                         
+          01 PARAMETRO.                                                         
+             05 PARM-LENGTH  PIC S9(04) COMP .                                  
+             05 OPERACAO     PIC X(03) .                                        
+             05 PARM-NUM1    PIC 9(04) .                                        
+             05 PARM-PALAVRA PIC X(10) .                                        
+                                                                                
+129000 PROCEDURE DIVISION USING PARAMETRO.                                      
+                                                                                
+           PERFORM 0100-INICIO-PROGRAMA.                                        
+                                                                                
+           PERFORM 0200-FUNCOES-PROGRAMA.                                       
+                                                                                
+           PERFORM 0900-FIM-DO-PROGRAMA.                                        
+                                                                                
+           STOP RUN.                                                            
+                                                                                
+       0100-INICIO-PROGRAMA SECTION.                                            
+                                                                                
+ 29100     DISPLAY BARRA.                                                       
+ 29100     DISPLAY WSS-PROGRAMA-INICIO.                                         
+ 29100     DISPLAY BARRA.                                                       
+                                                                                
+           EXIT.                                                                
+       0900-FIM-DO-PROGRAMA SECTION.                                            
+                                                                                
+ 29100     DISPLAY BARRA.                                                       
+ 29100     DISPLAY WSS-PROGRAMA-FIM.                                            
+ 29100     DISPLAY BARRA.                                                       
+                                                                                
+           EXIT.                                                                
+                                                                                
+       0200-FUNCOES-PROGRAMA SECTION.                                           
+                                                                                
+            EVALUATE OPERACAO                                                   
+             WHEN 'PES'                                                         
+                DISPLAY '* ================================== *'                
+                DISPLAY '* =       PERMUTACAO SIMPLES       = *'                
+                DISPLAY '* ================================== *'                
+                MOVE PARM-NUM1               TO CNT-PERM                        
+                                                                                
+                PERFORM 0201-CALCULA-PERMUTACAO UNTIL CNT-PERM                  
+                        EQUAL 1                                                 
+                                                                                
+                MOVE PERM-RESULTADO          TO RESULTADO-PERMUTA               
+                                                                                
+                DISPLAY ' P(' PARM-NUM1 ') =  ' RESULTADO-PERMUTA               
+                                                                                
+             WHEN 'PER'                                                         
+                DISPLAY '* ================================== *'                
+                DISPLAY '* =  PERMUTACAO C/ ELE. REPETIDOS  = *'                
+                DISPLAY '* ================================== *'                
+                DISPLAY '  FORMULA ( Pn elevado a k,j )        '                
+                DISPLAY '   onde n = numero de elementos ,      '               
+                DISPLAY '        k = repeticao de um elemento,  '               
+                DISPLAY '        j = repeticao de outro elemento.'              
+                DISPLAY BARRA                                                   
+                                                                                
+                PERFORM 0220-TAMANHO-PALAVRA UNTIL IND-ESPACO                   
+                        EQUAL 'S'                                               
+                                                                                
+                DISPLAY '|         DADOS DE OPERACAO          |'                
+                DISPLAY BARRA                                                   
+                DISPLAY ' Palavra informada : ' PARM-PALAVRA                    
+                DISPLAY ' n = elementos cont: ' TAMANHO-PALA                    
+                                                                                
+                MOVE PARM-PALAVRA           TO TRABALHA-PALAVRA                 
+                                                                                
+                PERFORM 0220-LETRAS-REPETIDAS                                   
+                                                                                
+                MOVE TAMANHO-PALA           TO CNT-PERM                         
+                                                                                
+                PERFORM 0201-CALCULA-PERMUTACAO UNTIL CNT-PERM                  
+                        EQUAL 1                                                 
+                                                                                
+                DISPLAY 'PERM-RESULTADO...:' PERM-RESULTADO                     
+                                                                                
+                MOVE  CONTA-PALA-REP        TO CNT-PERM                         
+                MOVE ZEROS                  TO PERM-RESULTADO                   
+                PERFORM 0201-CALCULA-PERMUTACAO UNTIL CNT-PERM                  
+                        EQUAL 1                                                 
+                DISPLAY 'PERM-RESULTADO...:' PERM-RESULTADO                     
+             WHEN OTHER                                                         
+                DISPLAY 'FUNCAO NAO CADASTRADA NO PROGRAMA'                     
+            END-EVALUATE.                                                       
+           EXIT.                                                                
+                                                                                
+       0201-CALCULA-PERMUTACAO SECTION.                                         
+                                                                                
+           IF PERM-RESULTADO EQUAL ZEROS                                        
+              MOVE CNT-PERM TO PERM-RESULTADO                                   
+           ELSE                                                                 
+              SUBTRACT 1 FROM CNT-PERM                                          
+              COMPUTE PERM-RESULTADO = PERM-RESULTADO * CNT-PERM.               
+           EXIT.                                                                
+                                                                                
+       0220-TAMANHO-PALAVRA        SECTION.                                     
+                                                                                
+           IF PARM-PALAVRA(IND-POSICAO:1) EQUAL LOW-VALUES                      
+              MOVE 'S'                 TO IND-ESPACO                            
+           ELSE                                                                 
+              ADD 1                    TO TAMANHO-PALA                          
+              ADD 1                    TO IND-POSICAO.                          
+                                                                                
+           EXIT.                                                                
+                                                                                
+       0220-LETRAS-REPETIDAS       SECTION.                                     
+           DISPLAY 'POSICAO-ATUAL.:' POSICAO-ATUAL.                             
+           MOVE 1                 TO IND-POSICAO.                               
+           MOVE 'N'               TO IND-FIM                                    
+           IF POSICAO-ATUAL EQUAL ZEROS                                         
+              MOVE 1              TO  POSICAO-ATUAL                             
+              MOVE PARM-PALAVRA(POSICAO-ATUAL:1)                                
+                                  TO GDA-LETRA-REP                              
+                                     LETRA-ELEMENTO1                            
+           ELSE                                                                 
+              ADD  1              TO  POSICAO-ATUAL                             
+              MOVE PARM-PALAVRA(POSICAO-ATUAL:1)                                
+                                  TO GDA-LETRA-REP                              
+              EVALUATE POSICAO-ATUAL                                            
+                 WHEN 2                                                         
+                 MOVE PARM-PALAVRA(POSICAO-ATUAL:1)                             
+                                  TO  LETRA-ELEMENTO2                           
+                 WHEN 3                                                         
+                 MOVE PARM-PALAVRA(POSICAO-ATUAL:1)                             
+                                  TO  LETRA-ELEMENTO3                           
+                 WHEN 4                                                         
+                 MOVE PARM-PALAVRA(POSICAO-ATUAL:1)                             
+                                  TO  LETRA-ELEMENTO4                           
+                 WHEN 5                                                         
+                 MOVE PARM-PALAVRA(POSICAO-ATUAL:1)                             
+                                  TO  LETRA-ELEMENTO5                           
+              END-EVALUATE.                                                     
+                                                                                
+           PERFORM 0221-LETRAS-REPETIDAS-CONT                                   
+               UNTIL IND-FIM EQUAL 'S'.                                         
+                                                                                
+             DISPLAY 'CONTA-PALA-REP...:' CONTA-PALA-REP.                       
+             DISPLAY 'LETRA-ELEMENTO ' LETRA-ELEMENTO1                          
+                                       LETRA-ELEMENTO2                          
+                                       LETRA-ELEMENTO3                          
+                                       LETRA-ELEMENTO4                          
+                                       LETRA-ELEMENTO5.                         
+                                                                                
+           MOVE  1                TO IND-POSICAO                                
+           MOVE 'N'               TO IND-FIM                                    
+                                                                                
+           PERFORM 0231-VERIFICA-FINALIZACAO-PALA                               
+               UNTIL IND-FIM EQUAL 'S'.                                         
+             DISPLAY 'GDA-VERI-FINA....:' GDA-VERI-FINA.                        
+             DISPLAY 'TRABALHA-PALAVRA.:' TRABALHA-PALAVRA.                     
+                                                                                
+           EXIT.                                                                
+                                                                                
+                                                                                
+       0221-LETRAS-REPETIDAS-CONT  SECTION.                                     
+                                                                                
+              IF TRABALHA-PALAVRA(IND-POSICAO:1) EQUAL SPACES                   
+                 ADD 1  TO IND-POSICAO.                                         
+                                                                                
+              IF GDA-LETRA-REP EQUAL TRABALHA-PALAVRA(IND-POSICAO:1)            
+                 MOVE SPACES     TO TRABALHA-PALAVRA(IND-POSICAO:1)             
+                 ADD 1 TO CONTA-PALA-REP.                                       
+                                                                                
+              ADD 1  TO IND-POSICAO                                             
+              IF IND-POSICAO GREATER TAMANHO-PALA                               
+                 MOVE 'S' TO IND-FIM.                                           
+              DISPLAY 'TRABALHA PALAVRA - ' TRABALHA-PALAVRA                    
+                                                                                
+           EXIT.                                                                
+                                                                                
+       0231-VERIFICA-FINALIZACAO-PALA   SECTION.                                
+                                                                                
+             IF TRABALHA-PALAVRA(IND-POSICAO:1) EQUAL SPACES                    
+                ADD 1             TO GDA-VERI-FINA.                             
+                                                                                
+             ADD 1                      TO IND-POSICAO.                         
+                                                                                
+             IF IND-POSICAO  GREATER TAMANHO-PALA                               
+                MOVE 'S'          TO IND-FIM                                    
+      *         IF GDA-VERI-FINA NOT EQUAL TAMANHO-PALA                         
+      *            GO   TO  0220-LETRAS-REPETIDAS.                              
+           EXIT.                                                                
