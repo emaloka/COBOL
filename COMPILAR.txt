@@ -1,4 +1,0 @@
-//COMPESTD JOB 'JOB SIMPLES',MSGLEVEL=A,CLASS=C,NOTIFY=&SYSUID                  
-//COB      EXEC IGYWCL,                                                         
-//         PGMLIB=SHRPRD.JAMAL.LOADLIB,GOPGM=ESTUDOJM                           
-//SYSIN    DD DSN=SHRPRD.JAMAL.FONTES(ESTUDOJM),DISP=SHR                        
