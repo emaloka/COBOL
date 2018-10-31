@@ -1,0 +1,20 @@
+//MAIL001  JOB  'MSA',CLASS=T,NOTIFY=&SYSUID                                    
+//COPY     EXEC  PGM=IEBGENER                                                   
+//SYSPRINT DD SYSOUT=*                                                          
+//SYSIN    DD DUMMY                                                             
+//SYSUT1   DD *                                                                 
+HELO ZNAL12                                                                     
+MAIL FROM:<BRB12@BRB.COM.BR>                                                    
+RCPT TO:<GRSISTEMADCP@BRB.COM.BR>                                               
+RCPT TO:<#Gerente GESEC>                                                        
+DATA                                                                            
+FROM: BRB11<BRB12@BRB.COM.BR>                                                   
+TO: <GRSISTEMADCP@BRB.COM.BR>                                                   
+TO: <#Gerente GESEC>                                                            
+SUBJECT: MOVIMENTO REJEITADO PELO DCC (CRS01)                                   
+Sr. Responsavel,                                                                
+Ha movimento rejeitado pelo DCC  (CRS01).                                       
+Codigo de erro nao cadastrado na tabela CRS.                                    
+Atenciosamente,                                                                 
+CRSJI100                                                                        
+//SYSUT2   DD SYSOUT=(A,CSSMTP1)                                                
